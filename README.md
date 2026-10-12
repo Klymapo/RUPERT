@@ -1,5 +1,8 @@
 # Rupert
 
+> **Empieza aquí:** [Guía fácil: qué es, dónde está y qué conservar](docs/GUIA_RAPIDA.md). No necesitas leer la documentación técnica para orientarte.
+
+
 **Rupert** is Atatoriz's cloud-first, phone-first, low-cost personal assistant hub.
 
 The public GitHub repository stores code, tests, workflows and static web assets. Private memory, auth state, conversations and secrets live outside the repo.
@@ -7,7 +10,7 @@ The public GitHub repository stores code, tests, workflows and static web assets
 ## Current milestone — v0.10 Cloud Core
 
 ```text
-📱 Phone / PWA on GitHub Pages
+📱 Phone / PWA (GitHub Pages pending activation)
           │
           │ Supabase Auth JWT
           ▼
@@ -26,7 +29,7 @@ A laptop is **not required** for normal Rupert use. It becomes an optional worke
 
 ## Phone app / PWA
 
-The mobile UI lives in `web/` and is deployed through GitHub Pages.
+The mobile UI lives in `web/`. A GitHub Actions workflow can deploy it when Pages is enabled, but repository metadata currently reports Pages as disabled.
 
 It provides:
 
