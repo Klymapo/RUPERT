@@ -1,0 +1,34 @@
+name: Ramas fusionadas · cierre verificado
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/cleanup-merged-branches-once.yml"]
+permissions:
+  contents: write
+  pull-requests: read
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs=require('fs');
+            const plan=JSON.parse(fs.readFileSync('docs/cleanup-rutas-fusionadas-2026-10-12.json','utf8'));
+            const {owner,repo}=context.repo;
+            const open=await github.paginate(github.rest.pulls.list,{owner,repo,state:'open',per_page:100});
+            const closed=await github.paginate(github.rest.pulls.list,{owner,repo,state:'closed',per_page:100});
+            const own=closed.find(p=>p.head.ref==='ops/cerrar-ramas-fusionadas-2026-10-12' && p.merged_at);
+            if(own)plan.branches.push({name:own.head.ref,sha:own.head.sha,pr:own.number});
+            for(const item of plan.branches){
+              if(!item.name||item.name==='main'||item.name.startsWith('bucle/')||item.name.startsWith('copox/')||item.name==='progreso'){core.warning('Protegida por política '+item.name);continue;}
+              const pr=(await github.rest.pulls.get({owner,repo,pull_number:item.pr})).data;
+              const ref=await github.rest.git.getRef({owner,repo,ref:'heads/'+item.name}).catch(e=>e.status===404?null:Promise.reject(e));
+              if(!ref){core.info('Ya retirada: '+item.name);continue;}
+              const branch=await github.rest.repos.getBranch({owner,repo,branch:item.name});
+              if(!pr.merged||pr.head.ref!==item.name||pr.head.sha!==item.sha||ref.data.object.sha!==item.sha||branch.data.protected||open.some(p=>p.head.ref===item.name)){core.warning('Conservada '+item.name);continue;}
+              await github.rest.git.deleteRef({owner,repo,ref:'heads/'+item.name});
+              core.info('CERRADA '+item.name+' · '+item.sha);
+            }
