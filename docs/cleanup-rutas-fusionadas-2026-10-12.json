@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-12",
+  "branches": [
+    {
+      "name": "audit/cleanup-2026-10-12",
+      "sha": "23688e44826632adf3dc00b16f8031381fad97ea",
+      "pr": 9
+    },
+    {
+      "name": "feat/remote-mcp-prompts-readonly",
+      "sha": "9c30ebafe3a5db35ce8ca4344b99fb3aca9e1335",
+      "pr": 8
+    },
+    {
+      "name": "feature/cloud-core-v0.10",
+      "sha": "b552be0d999a638d6afe3173548cd9e6bc47a008",
+      "pr": 7
+    },
+    {
+      "name": "feature/hybrid-router-v0.7",
+      "sha": "349b670f66733af2f7bf31a3eef0ddcc9a37a4c4",
+      "pr": 4
+    },
+    {
+      "name": "feature/local-brain-v0.6",
+      "sha": "837e8b82f742808ee856c5127139ba08526c0834",
+      "pr": 3
+    },
+    {
+      "name": "feature/permission-kernel-v0.8",
+      "sha": "c4f97e1d07c8a16d439a4148c5557c6fcf215e1a",
+      "pr": 5
+    },
+    {
+      "name": "feature/skill-registry-v0.9",
+      "sha": "a590bdb4550ada4fae6f87cc66893ad1791ad17b",
+      "pr": 6
+    },
+    {
+      "name": "feature/voice-pipeline-v0.4",
+      "sha": "b38e9219b4dcd162696cf8c38cdcc7d13c684cd6",
+      "pr": 1
+    },
+    {
+      "name": "feature/wakeword-v0.5",
+      "sha": "6767e262ffc0a41620cd3ea0485f5bd7a8e23fcb",
+      "pr": 2
+    },
+    {
+      "name": "organizacion/guia-clara-2026-10-12",
+      "sha": "8cf3fbeac31c765e655276183116f2b8b8c48b57",
+      "pr": 10
+    }
+  ]
+}
