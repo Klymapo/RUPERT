@@ -20,5 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verificar sintaxis del cliente PWA
+        run: node --check web/app.js
       - run: python -m pip install -e .
       - run: python -m unittest discover -s tests -v
