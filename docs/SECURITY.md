@@ -17,4 +17,4 @@ Prefer binding the Local REST API HTTP endpoint to `127.0.0.1` only. Do not expo
 
 ## GitHub
 
-A private repository is recommended while Rupert contains personal automation code. Secrets belong in local environment variables or `.env`, never Git history.
+The source repository is **public by design**; do not place personal memory, tokens, chats, Obsidian vault files or production Supabase data in Git. Secrets belong in server-side environment variables or untracked `.env` files, never Git history. Review changes before merging and keep all authenticated reads constrained by Supabase RLS. The public PWA may use a Supabase **publishable/anon** key; never expose the service-role key.
