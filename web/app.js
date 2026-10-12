@@ -130,19 +130,24 @@ async function sendMessage(text = promptInput.value) {
   sendBtn.disabled = true;
   setStatus("Rupert está pensando…", true);
 
-  const { data, error } = await supabase.functions.invoke("rupert", {
-    body: { message, source: "mobile", session_id: chatSessionId() },
-  });
-
-  if (error) {
-    addMessage("assistant", `Error: ${error.message}`);
-  } else if (data?.error) {
-    addMessage("assistant", `Error: ${data.error}`);
-  } else {
-    addMessage("assistant", data?.reply ?? "Sin respuesta.", data?.data ?? null);
+  try {
+    const { data, error } = await supabase.functions.invoke("rupert", {
+      body: { message, source: "mobile", session_id: chatSessionId() },
+    });
+    if (error) {
+      addMessage("assistant", `Error: ${error.message}`);
+    } else if (data?.error) {
+      addMessage("assistant", `Error: ${data.error}`);
+    } else {
+      addMessage("assistant", data?.reply ?? "Sin respuesta.", data?.data ?? null);
+    }
+  } catch (error) {
+    // Los fallos de red no deben dejar el botón Enviar bloqueado.
+    addMessage("assistant", `Sin conexión con Rupert: ${error instanceof Error ? error.message : "error inesperado"}`);
+  } finally {
+    sendBtn.disabled = false;
+    setStatus(session ? `En línea · ${session.user.email ?? "usuario"}` : "Sin sesión", Boolean(session));
   }
-  sendBtn.disabled = false;
-  setStatus(`En línea · ${session.user.email ?? "usuario"}`, true);
 }
 
 async function transcribe(blob) {

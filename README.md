@@ -120,6 +120,8 @@ The previous local components remain available and can later become an optional 
 
 Nothing forces the phone/cloud path to depend on them.
 
+[Auditoría de resiliencia, privacidad y CI](docs/AUDITORIA_REPOS_2026-10-12.md) — código público, memoria privada y requisitos de publicación.
+
 ## Security
 
 The central rules remain:
