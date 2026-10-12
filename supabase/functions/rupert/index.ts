@@ -1,5 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { listPublicMcpTools, searchPublicMcpPrompts } from "./mcp.ts";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -24,10 +23,6 @@ function normalize(value: string): string {
 
 function deterministic(message: string) {
   const text = normalize(message);
-  let m = text.match(/^mcp\s+herramientas$/i);
-  if (m) return { action: "mcp.tools", risk: "read" };
-  m = text.match(/^mcp\s+buscar\s+(.+)$/i);
-  if (m) return { action: "mcp.search", risk: "read", target: m[1].trim() };
   let m = text.match(/^buscar\s+(.+)$/i);
   if (m) return { action: "memory.search", risk: "read", target: m[1].trim() };
   m = text.match(/^leer\s+(.+)$/i);
@@ -103,25 +98,6 @@ Deno.serve(async (req: Request) => {
   });
 
   const route = deterministic(message);
-  // Explicit MCP commands are read-only. LLM-generated text NEVER calls this handler.
-  if (route?.action === "mcp.tools" || route?.action === "mcp.search") {
-    try {
-      const result = route.action === "mcp.tools"
-        ? await listPublicMcpTools()
-        : await searchPublicMcpPrompts(route.target ?? "");
-      await supabase.from("rupert_audit").insert({
-        user_id: user.id, source, action_name: route.action, risk: "read", status: "completed",
-        payload: { provider: "prompts.chat", count: result.data.length },
-      });
-      return json({ mode: "deterministic", action: route.action, ...result });
-    } catch {
-      await supabase.from("rupert_audit").insert({
-        user_id: user.id, source, action_name: route.action, risk: "read", status: "failed",
-        payload: { provider: "prompts.chat" },
-      });
-      return json({ mode: "deterministic", action: route.action, error: "No se pudo consultar prompts.chat. Intenta de nuevo más tarde." }, 502);
-    }
-  }
   if (route?.action === "memory.search") {
     const q = route.target.replace(/[%,]/g, " ");
     const { data, error } = await supabase
