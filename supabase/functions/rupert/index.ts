@@ -108,7 +108,7 @@ Deno.serve(async (req: Request) => {
     try {
       const result = route.action === "mcp.tools"
         ? await listPublicMcpTools()
-        : await searchPublicMcpPrompts(route.target);
+        : await searchPublicMcpPrompts(route.target ?? "");
       await supabase.from("rupert_audit").insert({
         user_id: user.id, source, action_name: route.action, risk: "read", status: "completed",
         payload: { provider: "prompts.chat", count: result.data.length },
