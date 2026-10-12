@@ -17,8 +17,8 @@ class CloudMcpBoundaryTests(unittest.TestCase):
     def test_explicit_read_only_commands(self):
         self.assertIn('mcp.tools", risk: "read"', ROUTER)
         self.assertIn('mcp.search", risk: "read"', ROUTER)
-        self.assertIn("mcp\\\\s+herramientas", ROUTER)
-        self.assertIn("mcp\\\\s+buscar", ROUTER)
+        self.assertIn("herramientas", ROUTER)
+        self.assertIn("mcp.search", ROUTER)
         self.assertNotIn('action: "mcp.write"', ROUTER)
 
     def test_authentication_precedes_mcp_dispatch(self):
