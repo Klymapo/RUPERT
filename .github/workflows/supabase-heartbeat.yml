@@ -1,0 +1,36 @@
+name: supabase-heartbeat
+
+# El plan gratis de Supabase pausa un proyecto tras una semana sin actividad.
+# Este latido hace una lectura mínima cada 3 días para mantenerlo despierto.
+# Secretos del repo (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL       https://<ref>.supabase.co
+#   SUPABASE_ANON_KEY  llave publishable/anon (nunca la service_role)
+
+on:
+  schedule:
+    - cron: '17 15 */3 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Latido a Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::notice::Faltan SUPABASE_URL o SUPABASE_ANON_KEY; latido omitido."
+            exit 0
+          fi
+          code=$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/rupert_settings?select=user_id&limit=1")
+          echo "Supabase respondió HTTP $code"
+          case "$code" in 2*) ;; *) exit 1 ;; esac

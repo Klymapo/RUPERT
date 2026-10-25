@@ -37,3 +37,10 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+
+# Android (app de la tablet)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/app/src/main/assets/wakeword/*.tflite

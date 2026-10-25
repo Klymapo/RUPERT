@@ -51,6 +51,7 @@ Deno.serve(async (req: Request) => {
   const model = Deno.env.get("CF_ASR_MODEL") ?? "@cf/openai/whisper-large-v3-turbo";
   if (!account || !apiToken) return json({ error: "workers_ai_not_configured" }, 503);
 
+  const requestedLanguage = String(form.get("language") ?? "es").trim().toLowerCase() || "es";
   const bytes = new Uint8Array(await file.arrayBuffer());
   const endpoint = `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(account)}/ai/run/${model}`;
   const cf = await fetch(endpoint, {
@@ -62,7 +63,8 @@ Deno.serve(async (req: Request) => {
     body: JSON.stringify({
       audio: toBase64(bytes),
       task: "transcribe",
-      language: String(form.get("language") ?? "es"),
+      // "auto" deja que Whisper detecte el idioma (cambio de idioma a media conversación).
+      ...(requestedLanguage === "auto" ? {} : { language: requestedLanguage }),
       vad_filter: true,
       condition_on_previous_text: false,
       initial_prompt: "Comandos y dictado para Rupert, asistente personal. Nombres frecuentes pueden incluir Theo, Alastor, Obsidian, Godot y GitHub.",
@@ -94,5 +96,6 @@ Deno.serve(async (req: Request) => {
     payload: { bytes: file.size, model },
   });
 
-  return json({ text: String(text).trim(), model });
+  const language = String(result?.transcription_info?.language ?? (requestedLanguage === "auto" ? "es" : requestedLanguage));
+  return json({ text: String(text).trim(), language, model });
 });
