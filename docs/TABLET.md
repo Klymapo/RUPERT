@@ -70,7 +70,10 @@ GitHub apaga los workflows programados si el repo pasa 60 días sin actividad; e
 ### 5. Configurar
 En la app → **Ajustes**:
 1. URL del proyecto Supabase y llave publishable/anon (nunca la service_role).
-2. Tu correo y contraseña de Supabase Auth → "Guardar e iniciar sesión".
+2. Inicia sesión con tu cuenta de Supabase Auth:
+   - con contraseña: correo + contraseña → "Guardar e iniciar sesión"; o
+   - con código (el login por correo de la PWA): "Enviar código", escribe el código de 6 dígitos y "Guardar e iniciar sesión".
+     Para que el correo traiga el código, en Supabase → Authentication → Email Templates → Magic Link agrega `{{ .Token }}` al texto.
 3. "Quitar optimización de batería".
 4. En Ajustes de Android → Batería → Límites de uso en segundo plano → **Aplicaciones que nunca entran en suspensión** → agrega Rupert.
 5. Para voces más naturales: Ajustes → Administración general → Salida de texto a voz → descarga los idiomas que uses.

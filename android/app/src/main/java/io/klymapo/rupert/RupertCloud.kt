@@ -31,6 +31,19 @@ class RupertCloud(private val prefs: Prefs) {
         prefs.email = email
     }
 
+    /** Envía un código de un solo uso al correo (mismo login por OTP que usa la PWA). */
+    fun sendOtp(email: String) {
+        val body = JSONObject().put("email", email).put("create_user", false)
+        postJson("${prefs.supabaseUrl}/auth/v1/otp", body, bearer = null)
+        prefs.email = email
+    }
+
+    fun verifyOtp(email: String, code: String) {
+        val body = JSONObject().put("type", "email").put("email", email).put("token", code.trim())
+        storeSession(postJson("${prefs.supabaseUrl}/auth/v1/verify", body, bearer = null))
+        prefs.email = email
+    }
+
     private fun refresh() {
         if (prefs.refreshToken.isBlank()) throw CloudException("Inicia sesión en Ajustes.")
         val body = JSONObject().put("refresh_token", prefs.refreshToken)

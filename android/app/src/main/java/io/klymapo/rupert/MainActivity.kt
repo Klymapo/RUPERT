@@ -248,7 +248,8 @@ class MainActivity : ComponentActivity() {
                 OutlinedTextField(anon, { anon = it }, label = { Text("Llave publishable / anon") }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(email, { email = it }, label = { Text("Correo") }, singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email), modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(password, { password = it }, label = { Text("Contraseña") }, singleLine = true,
+                Text("Entra con contraseña, o deja la contraseña vacía y usa el código que llega a tu correo.", color = Ink.copy(alpha = 0.7f))
+                OutlinedTextField(password, { password = it }, label = { Text("Contraseña o código del correo") }, singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), modifier = Modifier.fillMaxWidth())
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -258,14 +259,26 @@ class MainActivity : ComponentActivity() {
                             status = "Conectando…"
                             scope.launch {
                                 status = withContext(Dispatchers.IO) {
-                                    runCatching { cloud.signIn(email, password); cloud.heartbeat() }
-                                        .fold({ "Sesión activa como $email." }, { "Error: ${it.message}" })
+                                    val isCode = password.trim().length in 6..8 && password.trim().all(Char::isDigit)
+                                    runCatching {
+                                        if (isCode) cloud.verifyOtp(email, password) else cloud.signIn(email, password)
+                                        cloud.heartbeat()
+                                    }.fold({ "Sesión activa como $email." }, { "Error: ${it.message}" })
                                 }
                                 password = ""
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Wine),
                     ) { Text("Guardar e iniciar sesión") }
+                    OutlinedButton(onClick = {
+                        prefs.supabaseUrl = url; prefs.anonKey = anon
+                        scope.launch {
+                            status = withContext(Dispatchers.IO) {
+                                runCatching { cloud.sendOtp(email) }
+                                    .fold({ "Te mandé un código a $email. Escríbelo arriba y toca Guardar." }, { "Error: ${it.message}" })
+                            }
+                        }
+                    }) { Text("Enviar código") }
                     OutlinedButton(onClick = { prefs.signOut(); status = "Sin sesión." }) { Text("Cerrar sesión") }
                 }
                 Text(status, color = Ink)
