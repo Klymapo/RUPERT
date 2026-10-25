@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Rupert" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/rupert_paper</item>
+        <item name="android:statusBarColor">@color/rupert_paper</item>
+        <item name="android:navigationBarColor">@color/rupert_paper</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <color name="rupert_paper">#FFF8F3E8</color>
+</resources>

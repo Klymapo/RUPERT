@@ -7,7 +7,14 @@
 
 The public GitHub repository stores code, tests, workflows and static web assets. Private memory, auth state, conversations and secrets live outside the repo.
 
-## Current milestone — v0.10 Cloud Core
+## New — v0.11 Rupert Tablet
+
+The Galaxy Tab A9 is now Rupert's home: a native Kotlin app (`android/`) with an always-on local wake word,
+an animated face and spoken replies in whatever language you use. The cloud brain moved to **Gemini Flash**
+(free tier) with Cloudflare Workers AI as fallback. Setup guide (Spanish): [docs/TABLET.md](docs/TABLET.md).
+The APK is built by GitHub Actions and published as the `tablet-latest` release.
+
+## Milestone — v0.10 Cloud Core
 
 ```text
 📱 Phone / PWA (GitHub Pages pending activation)

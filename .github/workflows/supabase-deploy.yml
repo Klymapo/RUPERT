@@ -1,0 +1,50 @@
+name: supabase-deploy
+
+# Despliega las Edge Functions sin laptop: cada push a main que toque
+# supabase/functions/, o a mano desde la pestaña Actions.
+# Secretos del repo:
+#   SUPABASE_ACCESS_TOKEN  token personal de supabase.com/dashboard/account/tokens
+#   SUPABASE_PROJECT_REF   el <ref> de https://<ref>.supabase.co
+# Los secretos del cerebro (GEMINI_API_KEY, CF_*) viven en Supabase, no aquí.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/functions/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Revisar secretos
+        id: check
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PROJECT_REF" ]; then
+            echo "::notice::Faltan SUPABASE_ACCESS_TOKEN o SUPABASE_PROJECT_REF; despliegue omitido."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: supabase/setup-cli@v1
+        if: steps.check.outputs.ready == 'true'
+        with:
+          version: latest
+      - name: Desplegar funciones
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          supabase functions deploy rupert --project-ref "$SUPABASE_PROJECT_REF"
+          supabase functions deploy rupert-transcribe --project-ref "$SUPABASE_PROJECT_REF"
